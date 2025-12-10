@@ -1,0 +1,4 @@
+job_id,domain,skills,text
+J1,SWE,"java,spring,api","backend engineer requiring java and api"
+J2,ML,"python,ml,deep learning","ML engineer requiring DL"
+J3,DS,"sql,analysis,visualization","data analyst job focused on visualization"
