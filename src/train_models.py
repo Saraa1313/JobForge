@@ -38,7 +38,7 @@ except ImportError:
 class ResumeJobMatcher:
     """Main class for training resume-job matching models"""
     
-    def __init__(self, data_path='data/pairs_to_label.csv'):
+    def __init__(self, data_path='data/pairs_labeled.csv'):
         """Initialize and load data"""
         print("="*70)
         print("RESUME-JOB MATCH QUALITY PREDICTION")
@@ -425,7 +425,7 @@ class ResumeJobMatcher:
         self.save_models()
         
         print("\n" + "="*70)
-        print("✅ TRAINING COMPLETE!")
+        print(" TRAINING COMPLETE!")
         print("="*70)
         print("\nGenerated files:")
         print("  - model_comparison.png")
@@ -437,7 +437,7 @@ class ResumeJobMatcher:
 
 def main():
     """Main execution function"""
-    matcher = ResumeJobMatcher('pairs_labeled.csv')
+    matcher = ResumeJobMatcher('data/pairs_labeled.csv')
     success = matcher.run_pipeline()
     
     if not success:
