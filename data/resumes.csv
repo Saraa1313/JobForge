@@ -1,4 +1,18 @@
-resume_id,domain,skills,text
-R1,SWE,"python,java,rest","software engineer with java backend experience"
-R2,ML,"python,ml,sklearn","machine learning student with sklearn projects"
-R3,DS,"sql,python,tableau","data analyst experienced in tableau and sql"
+resume_id,role,text
+R1,SWE,"Software engineer with 2 years of experience in Java, Spring Boot, REST APIs, and MySQL. Built microservices and optimized backend performance."
+R2,SWE,"Full-stack developer skilled in Python, Django, React, PostgreSQL, and Docker. Developed end-to-end web applications and deployed to AWS."
+R3,SWE,"Backend developer with experience in Go, Redis, gRPC, and scalable distributed systems."
+R4,ML,"Machine learning engineer with projects in NLP, PyTorch, sklearn, transformers, and model deployment."
+R5,ML,"Deep learning engineer experienced in CNNs, computer vision, and GPU training pipelines."
+R6,DS,"Data scientist skilled in statistical modeling, A/B testing, regression, clustering, and predictive analytics."
+R7,DS,"Business data analyst with SQL, Tableau, Excel, and KPI dashboard experience."
+R8,DA,"Data engineer experienced in Airflow, ETL pipelines, Spark, and cloud data warehouses."
+R9,FE,"Frontend engineer with React, TypeScript, Redux, UI optimization, and accessibility improvements."
+R10,FE,"UI developer experienced in Next.js, CSS animations, responsive design, and component libraries."
+R11,PM,"Product manager with experience writing PRDs, running sprints, leading cross-functional teams, and analyzing user research."
+R12,PM,"Technical PM with background in backend systems, API design, and feature planning for B2B platforms."
+R13,ML,"NLP engineer with experience in sentiment analysis, topic modeling, embeddings, and fine-tuning language models."
+R14,SWE,"Java developer with strong OOP skills, multithreading, caching layers, and API development."
+R15,DS,"Data scientist focused on churn prediction, segmentation models, time series forecasting, and business insights."
+
+

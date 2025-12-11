@@ -1,23 +1,29 @@
 import pandas as pd
 
-def skill_overlap(r, j):
-    r = set(r.split(","))
-    j = set(j.split(","))
-    return len(r & j) / len(j)
+RESUME_PATH = "data/resumes.csv"
+JOB_PATH = "data/jobs.csv"
+OUTPUT_PATH = "data/pairs_to_label.csv"
 
-def compute_label(d1, d2, overlap):
-    return 0.7 * (1 if d1 == d2 else 0) + 0.3 * overlap
+def main():
+    resumes = pd.read_csv(RESUME_PATH)
+    jobs = pd.read_csv(JOB_PATH)
 
-res = pd.read_csv("data/resumes.csv")
-jobs = pd.read_csv("data/jobs.csv")
+    rows = []
+    for _, r in resumes.iterrows():
+        for _, j in jobs.iterrows():
+            rows.append({
+                "resume_id": r["resume_id"],
+                "resume_role": r["role"],
+                "resume_text": r["text"],
+                "job_id": j["job_id"],
+                "job_role": j["role"],
+                "job_text": j["text"],
+                "label": ""   # <-- YOU will fill 0/1/2 here
+            })
 
-rows = []
-for _, r in res.iterrows():
-    for _, j in jobs.iterrows():
-        ov = skill_overlap(r["skills"], j["skills"])
-        score = compute_label(r["domain"], j["domain"], ov)
-        rows.append([r["resume_id"], j["job_id"], score, r["text"], j["text"]])
+    df = pd.DataFrame(rows)
+    df.to_csv(OUTPUT_PATH, index=False)
+    print(f"Generated {len(df)} pairs into {OUTPUT_PATH}")
 
-df = pd.DataFrame(rows, columns=["resume_id","job_id","match_score","resume_text","job_text"])
-df.to_csv("data/pairs.csv", index=False)
-print("Generated data/pairs.csv")
+if __name__ == "__main__":
+    main()

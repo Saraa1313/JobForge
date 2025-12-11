@@ -1,4 +1,18 @@
-job_id,domain,skills,text
-J1,SWE,"java,spring,api","backend engineer requiring java and api"
-J2,ML,"python,ml,deep learning","ML engineer requiring DL"
-J3,DS,"sql,analysis,visualization","data analyst job focused on visualization"
+job_id,role,text
+J1,SWE,"Hiring a backend software engineer to design REST APIs using Java/Spring, work on relational databases, and scale microservices."
+J2,SWE,"Looking for a full-stack engineer skilled in Django, React, CI/CD pipelines, and cloud deployment."
+J3,SWE,"Seeking a backend engineer with Go, Redis, message queues, and distributed system knowledge."
+J4,ML,"Machine Learning Engineer role focusing on classification models, NLP pipelines, and deploying models to production."
+J5,ML,"Deep Learning Engineer needed for CNN development, image classification, training optimization, and GPU workloads."
+J6,DS,"Hiring a Data Scientist to run experiments, build models, analyze datasets, and communicate insights."
+J7,DS,"Data Analyst position requiring SQL, dashboard development, metric analysis, and business reporting."
+J8,DA,"Data Engineer responsible for building pipelines, automating workflows with Airflow, and supporting analytical teams."
+J9,FE,"Frontend engineer needed to build performant React interfaces, reusable components, and optimize for accessibility."
+J10,FE,"UI engineer role involving Next.js development, design system improvements, and responsive layouts."
+J11,PM,"Hiring a Product Manager to drive roadmap planning, write PRDs, run sprint ceremonies, and evaluate product metrics."
+J12,PM,"Technical PM position responsible for API design discussions, cross-team alignment, and platform feature planning."
+J13,ML,"NLP engineer role focusing on embeddings, text classification, and improving search relevance."
+J14,SWE,"Looking for a Java backend engineer experienced in microservices, caching, and API development."
+J15,DS,"Data Scientist needed for customer modeling, time series forecasting, and machine learning experimentation."
+
+
