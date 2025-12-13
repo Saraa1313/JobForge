@@ -28,15 +28,61 @@ Job:Plumber needed for residential and commercial properties. Install maintain a
 Resume:Frontend developer with React Vue and TypeScript. Built responsive web apps with CSS HTML JavaScript. Strong in UI development component architecture. Some REST API integration. Experience with Git and webpack.
 Job:Data scientist needed. SQL Python pandas required. Statistical analysis machine learning models. Need scikit-learn NumPy experience. Build predictive models and data visualization. Tableau or similar tools.
 -----------
-Resume:
-Job:
+Resume:Senior Data Scientist with 5 years experience, holding a M.S. in Computer Science. Expert in A/B Testing, Spark, Pandas. Built pricing algorithm increasing margin by 5%.
+SKILLS: Pandas, Snowflake, BigQuery, Python, R, Statistical Modeling, Spark, SQL
+Job:Help shape the future of construction through software! Fieldwire is hiring fully remote, full-time roles across the US. We’re a construction field management platform building world-class technology to modernize a $10 trillion global industry, supporting over 2 million projects for 5,000+ customers across 100+ countries and 14 languages. Acquired by Hilti in November 2021, Fieldwire is on a mission to bring real tech innovation to an industry that’s been overlooked for years. We’re currently hiring an iOS Engineer (3+ years experience, BS/MS in CS or equivalent experience) and an Android Engineer (0.5+ years experience, BS/MS in CS or equivalent experience), both US-remote. Apply here: iOS – https://grnh.se/50hoz2kg2us, Android – https://grnh.se/3452vy6n2us. Explore more roles at https://www.fieldwire.com/jobs/ and https://engineering.fieldwire.com/.
+
+
+*********TEST SET****************
+
 -----------
-Resume:
-Job:
+MODERATE
+Resume:Senior Data Scientist with 5 years experience, holding a M.S. in Computer Science. Expert in A/B Testing, Spark, Pandas. Built pricing algorithm increasing margin by 5%.
+SKILLS: Pandas, Snowflake, BigQuery, Python, R, Statistical Modeling, Spark, SQL
+Job:Artificial Analysis | https://artificialanalysis.ai | Full Stack Engineer, ML Engineer, Member of Technical Staff | Onsite in San Francisco or in Australia/New Zealand | Competitive Salary + Equity Artificial Analysis is an independent AI benchmarking and insights provider. We benchmark AI to help engineers and companies understand AI and make informed decisions regarding which AI technologies to use. We are fast growing with a team of 20 and have backing from investors including Nat Friedman, Daniel Gross & Andrew Ng. We are hiring for four roles:
+1. Full Stack Engineer: Full Stack Engineer to support our benchmarking of AI and with communicating these benchmarks to our users. Proficiency in Typescript & Python required. Familiarity with LLM APIs preferred.
+Tech stack: Javascript/Typescript, Node.js, React/Next.js, Python. 2. ML Engineer: ML Engineer to support our benchmarking and evaluation of AI software stack. You will design and run benchmarks and evaluations of different AI models. Strong analytical skills and proficiency in Python required. 3. Member of Technical Staff: You will design evaluations of different AI models and work to translate technical insights to analysis that helps companies navigate AI. 4. Product Manager (AI Media Generation): You'll work closely with us to develop and enhance our media generation (Image, Video, Speech, Music) arenas and leaderboards, contributing to product strategy and execution at the intersection of creativity and AI. Apply at hiring (-at-) artificialanalysis.ai with your resume, github and dot points on relevant experience (including anything you've built). Add | HackerNews to email subject line.
 -----------
-Resume:
-Job:
+STRONG
+Resume:Senior Data Scientist with 5 years experience, holding a M.S. in Computer Science. Expert in A/B Testing, Spark, Pandas. Built pricing algorithm increasing margin by 5%.
+SKILLS: Pandas, Snowflake, BigQuery, Python, R, Statistical Modeling, Spark, SQL
+Job:Location: United States (Remote-friendly, open to global opportunities)
+Work Preference: Remote | Open to relocation worldwide
+Target Roles: Data Analyst, Data Engineer, Business Intelligence Analyst, Analytics Engineer, Junior AI Engineer / AI Data Scientist
+
+Technical Stack: Python, SQL, Snowflake, Azure, Power BI, Tableau, Excel, DAX, Pandas, NumPy, ETL pipelines, Data Modeling, Power Query, APIs, Dashboard Design, Statistical Analysis, Machine Learning (scikit-learn, TensorFlow), Data Cleaning, Data Warehousing, NLP, Model Evaluation
+
+Profile:
+I’m a data and analytics professional with hands-on experience across analytics, BI, and data engineering, focused on building reliable data pipelines, streamlining workflows, and delivering dashboards that drive real business decisions. I’ve worked on end-to-end data solutions—from ingestion and transformation to visualization and insight generation—and have applied machine learning techniques for prediction, classification, and NLP-driven use cases. I’m currently seeking junior AI or AI data scientist roles, as well as data- and BI-focused positions where I can contribute to scalable, data-driven products in fast-moving, innovation-oriented teams. Open to full-time or contract opportunities.
+
+LinkedIn: https://www.linkedin.com/in/sumerpatil
+Email: sumerpatil4599@gmail.com
+Phone: +1 214 228 3285
 -----------
-Resume:
-Job:
+POOR
+Resume:Senior Data Scientist with 5 years experience, holding a M.S. in Computer Science. Expert in A/B Testing, Spark, Pandas. Built pricing algorithm increasing margin by 5%.
+SKILLS: Pandas, Snowflake, BigQuery, Python, R, Statistical Modeling, Spark, SQL
+Job:Location: United States (Domestic & International Routes)
+Work Type: Full-Time | Contract
+Travel Requirement: Extensive | Relocation-friendly
+
+Target Role: Commercial Pilot / Airline Pilot
+
+Aircraft Experience (Preferred):
+Single-Engine & Multi-Engine Aircraft, Turboprop, Jet Aircraft (type ratings a plus)
+
+Qualifications & Certifications:
+FAA / EASA / ICAO-recognized Commercial Pilot License (CPL) or Airline Transport Pilot License (ATPL), valid Medical Certificate (Class I or II as applicable), Instrument Rating (IR), Multi-Engine Rating, strong understanding of aviation regulations and flight safety standards
+
+Role Overview:
+We are seeking a skilled and safety-driven Pilot to operate aircraft in accordance with established flight plans, aviation regulations, and company procedures. The role requires sound judgment, strong situational awareness, and the ability to perform consistently in dynamic and time-critical environments. Pilots will be responsible for ensuring passenger safety, aircraft integrity, and efficient flight operations across scheduled and unscheduled routes.
+
+Key Responsibilities:
+Operate aircraft safely during all phases of flight, conduct pre-flight and post-flight inspections, monitor weather and flight conditions, communicate effectively with air traffic control and crew members, manage in-flight decision-making, respond to abnormal or emergency situations, maintain accurate flight logs and documentation, and comply with all regulatory, safety, and operational standards.
+
+Preferred Skills:
+Strong aeronautical decision-making, calm performance under pressure, excellent communication and teamwork, high attention to detail, adaptability to changing conditions, and a strong commitment to safety and professionalism.
+
+Why Join:
+Opportunity to fly modern aircraft, work in a safety-first environment, gain international exposure, and grow within a professional flight operations team. Competitive compensation and advancement opportunities based on experience and performance.
 -----------
