@@ -1,0 +1,42 @@
+Resume: Senior Machine Learning Engineer with 6 years of experience in NLP and computer vision. Deep expertise in PyTorch, TensorFlow, and Hugging Face Transformers. Built production LLMs for text generation, sentiment analysis, and named entity recognition. Strong Python programming skills with experience deploying models using Docker, Kubernetes, and AWS SageMaker. Published 4 papers at top ML conferences (NeurIPS, ICML). Proficient in MLOps, CI/CD pipelines, model monitoring, and A/B testing. Led team of 3 ML engineers building recommendation systems serving 10M+ users.
+Job: Senior Machine Learning Engineer - NLP Team
+Join our AI research team building next-generation language models. You'll design and train transformer-based models using PyTorch and Hugging Face. We need someone with strong ML fundamentals, experience with LLMs, and production deployment skills.
+
+Requirements:
+•⁠  ⁠5+ years ML engineering experience
+•⁠  ⁠Expert in PyTorch or TensorFlow
+•⁠  ⁠Strong Python programming
+•⁠  ⁠NLP and transformer models experience
+•⁠  ⁠Model deployment (Docker, Kubernetes)
+•⁠  ⁠Cloud platforms (AWS, GCP)
+•⁠  ⁠Bonus: Publications at top ML conferences
+
+Tech Stack: PyTorch, Transformers, Python, AWS, Docker, Kubernetes, MLOps tools
+-----------
+Resume:Machine Learning Engineer with 5 years experience in PyTorch TensorFlow and NLP. Built production models for text classification and sentiment analysis. Expert in Python deep learning and neural networks. Experience with Docker Kubernetes and AWS deployment. Strong background in transformers BERT and GPT models.
+Job:ML Engineer for NLP team. Must have PyTorch TensorFlow experience. Building language models and transformers. Python required. Deploy models with Docker Kubernetes. AWS experience needed. Work on BERT GPT architectures.
+-----------
+Resume:Software engineer with 4 years Python Django PostgreSQL experience. Built REST APIs and microservices. Expert in Docker AWS and Redis. Developed systems with PostgreSQL MongoDB. Strong in backend development and database design. Experience with Kubernetes CI/CD and Jenkins.
+Job:Backend engineer needed. Python Django required. PostgreSQL database work. Build REST APIs and microservices. Docker Kubernetes deployment. AWS experience necessary. Redis caching MongoDB knowledge helpful.
+-----------
+Resume:Backend developer with Node.js Express and MongoDB experience. Built REST APIs. Some React work on internal tools. Experience with PostgreSQL Docker and AWS. Strong in server-side development. Familiar with JavaScript and Git.
+Job:Full-stack developer position. Primary focus React TypeScript frontend. Also need Node.js for backend APIs. PostgreSQL database. Docker helpful. Looking for strong frontend skills with React.
+-----------
+Resume:Software Development Engineer with 4 years experience. Expert in Python Java AWS and Docker. Built self-serve verification service automating employee letters saving 85% manual effort for 2000 users. Strong in REST APIs microservices PostgreSQL and CI/CD pipelines.
+Job:Plumber needed for residential and commercial properties. Install maintain and repair water supply lines drainage systems and plumbing fixtures. Must know pipes fittings and fixtures. No programming required. Physical work with tools.'
+-----------
+Resume:Frontend developer with React Vue and TypeScript. Built responsive web apps with CSS HTML JavaScript. Strong in UI development component architecture. Some REST API integration. Experience with Git and webpack.
+Job:Data scientist needed. SQL Python pandas required. Statistical analysis machine learning models. Need scikit-learn NumPy experience. Build predictive models and data visualization. Tableau or similar tools.
+-----------
+Resume:
+Job:
+-----------
+Resume:
+Job:
+-----------
+Resume:
+Job:
+-----------
+Resume:
+Job:
+-----------

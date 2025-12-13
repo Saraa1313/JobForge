@@ -1,3 +1,14 @@
+"""
+ALL-IN-ONE: Generate and Label Resume-Job Pairs (Mac Compatible)
+Fixed version that avoids "Illegal instruction: 4" error
+
+This script:
+1.⁠ ⁠Loads data using csv module (not pandas initially to avoid numpy issues)
+2.⁠ ⁠Generates pairs
+3.⁠ ⁠Auto-labels them
+4.⁠ ⁠Saves ready-to-train dataset
+"""
+
 import csv
 import os
 import re
@@ -11,10 +22,10 @@ NUM_JOBS = 75  # How many jobs to sample (increased for better performance)
 USE_REAL_RESUMES = True
 USE_SYNTHETIC_RESUMES = True
 
-# Labeling thresholds - STRICTER for better accuracy
-STRONG_MATCH_THRESHOLD = 3  # Need 3+ matching tech keywords for strong match
-MODERATE_MATCH_THRESHOLD = 2  # Need 2+ matching keywords for moderate
-HIGH_OVERLAP_STRONG = 4  # For related roles, need even more overlap
+# Labeling thresholds - BALANCED for proper distribution
+STRONG_MATCH_THRESHOLD = 2  # Need 2+ matching tech keywords
+MODERATE_MATCH_THRESHOLD = 1  # Need 1+ matching keywords  
+HIGH_OVERLAP_STRONG = 2  # For related roles, need 2+ (lowered from 3)
 
 # ============================================================================
 # TECH KEYWORDS
@@ -127,7 +138,7 @@ def has_role_indicators(text, role):
     return False
 
 def label_pair(resume_role, job_role_mapped, resume_text, job_text):
-    """Assign label with STRICT validation - prevents SWE vs Plumber mistakes!"""
+    """Assign label with BALANCED validation"""
     
     tech_overlap, resume_tech, job_tech = calculate_tech_overlap(resume_text, job_text)
     
@@ -145,12 +156,16 @@ def label_pair(resume_role, job_role_mapped, resume_text, job_text):
     
     # EXACT ROLE MATCH (e.g., SWE resume + SWE job)
     if resume_role == job_role_mapped:
-        if tech_overlap >= STRONG_MATCH_THRESHOLD:
-            return 2  # Strong match: same role + high tech overlap
-        elif tech_overlap >= MODERATE_MATCH_THRESHOLD:
-            return 1  # Moderate match: same role + some tech overlap
+        # Same role - be GENEROUS with Strong matches
+        if tech_overlap >= 2:  # 2+ keywords
+            return 2  # Strong match
+        elif tech_overlap >= 1:  # 1+ keyword
+            return 1  # Moderate match
+        elif len(resume_tech) > 0 and len(job_tech) > 0:
+            # Both have tech keywords even if no overlap
+            return 1  # Moderate (same role, both technical)
         else:
-            return 1  # Same role but low tech overlap - still moderate
+            return 0  # Same role but NO tech overlap → Poor
     
     # RELATED ROLES (e.g., SWE ↔️ ML, ML ↔️ DS)
     related_pairs = [
@@ -160,23 +175,28 @@ def label_pair(resume_role, job_role_mapped, resume_text, job_text):
         ('SWE', 'FE'), ('FE', 'SWE'),
         ('SWE', 'DEVOPS'), ('DEVOPS', 'SWE'),
         ('DA', 'ML'), ('ML', 'DA'),
+        ('FE', 'DEVOPS'), ('DEVOPS', 'FE'),
     ]
     
     if (resume_role, job_role_mapped) in related_pairs:
-        # For related roles, need HIGHER overlap to be strong
-        if tech_overlap >= HIGH_OVERLAP_STRONG:
+        # For related roles, be MODERATE generous
+        if tech_overlap >= 3:  # 3+ keywords for related roles
             return 2  # Strong match despite different roles
-        elif tech_overlap >= MODERATE_MATCH_THRESHOLD:
+        elif tech_overlap >= 2:  # 2+ keywords
             return 1  # Moderate match
+        elif tech_overlap >= 1:  # 1 keyword
+            return 1  # Still moderate for related roles
         else:
-            return 0  # Related but insufficient overlap → Poor
+            return 0  # Related but NO overlap → Poor
     
     # COMPLETELY UNRELATED ROLES (e.g., SWE vs PM, FE vs DA)
-    # Need very high overlap to even be moderate
+    # Need high overlap to even be moderate
     if tech_overlap >= 3:
         return 1  # Some overlap despite unrelated roles
+    elif tech_overlap >= 1:
+        return 0  # Minimal overlap - poor match
     else:
-        return 0  # Poor match - unrelated and low overlap
+        return 0  # Poor match - unrelated and no overlap
 
 # ============================================================================
 # MAIN PIPELINE
@@ -217,6 +237,17 @@ def main():
     if real_resumes is None:
         print("❌ real_resumes_extracted.csv not found")
         return 1
+    
+    # Validate resume structure
+    if real_resumes and len(real_resumes) > 0:
+        required_cols = ['resume_id', 'resume_role', 'resume_text']
+        actual_cols = list(real_resumes[0].keys())
+        missing = [col for col in required_cols if col not in actual_cols]
+        if missing:
+            print(f"❌ ERROR: real_resumes_extracted.csv missing columns: {missing}")
+            print(f"   Found columns: {actual_cols}")
+            return 1
+    
     print(f"✅ Loaded {len(real_resumes)} real resumes")
     
     print("\n[3/3] Loading synthetic resumes...")
@@ -226,6 +257,17 @@ def main():
     if synthetic_resumes is None:
         print("❌ synthetic_resumes_50.csv not found")
         return 1
+    
+    # Validate resume structure
+    if synthetic_resumes and len(synthetic_resumes) > 0:
+        required_cols = ['resume_id', 'resume_role', 'resume_text']
+        actual_cols = list(synthetic_resumes[0].keys())
+        missing = [col for col in required_cols if col not in actual_cols]
+        if missing:
+            print(f"❌ ERROR: synthetic_resumes_50.csv missing columns: {missing}")
+            print(f"   Found columns: {actual_cols}")
+            return 1
+    
     print(f"✅ Loaded {len(synthetic_resumes)} synthetic resumes")
     
     # ========================================================================
@@ -293,7 +335,7 @@ def main():
     pairs = []
     for resume in resumes:
         for job in sampled_jobs:
-            # Rename job_desc to job_text if needed
+            # Handle both job_desc and job_text column names
             job_text = job.get('job_text') or job.get('job_desc', '')
             
             pairs.append({
