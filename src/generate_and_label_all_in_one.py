@@ -1,14 +1,3 @@
-"""
-ALL-IN-ONE: Generate and Label Resume-Job Pairs (Mac Compatible)
-Fixed version that avoids "Illegal instruction: 4" error
-
-This script:
-1. Loads data using csv module (not pandas initially to avoid numpy issues)
-2. Generates pairs
-3. Auto-labels them
-4. Saves ready-to-train dataset
-"""
-
 import csv
 import os
 import re
@@ -18,14 +7,14 @@ from collections import defaultdict, Counter
 # CONFIGURATION
 # ============================================================================
 
-NUM_JOBS = 50  # How many jobs to sample
+NUM_JOBS = 75  # How many jobs to sample (increased for better performance)
 USE_REAL_RESUMES = True
 USE_SYNTHETIC_RESUMES = True
 
-# Labeling thresholds
-STRONG_MATCH_THRESHOLD = 1
-MODERATE_MATCH_THRESHOLD = 1
-HIGH_OVERLAP_STRONG = 2
+# Labeling thresholds - STRICTER for better accuracy
+STRONG_MATCH_THRESHOLD = 3  # Need 3+ matching tech keywords for strong match
+MODERATE_MATCH_THRESHOLD = 2  # Need 2+ matching keywords for moderate
+HIGH_OVERLAP_STRONG = 4  # For related roles, need even more overlap
 
 # ============================================================================
 # TECH KEYWORDS
@@ -43,7 +32,19 @@ TECH_KEYWORDS = {
     'aws', 'azure', 'gcp', 'kubernetes', 'k8s', 'docker', 'terraform', 'jenkins',
     'ci/cd', 'prometheus', 'grafana', 'helm', 'ansible', 'circleci',
     'mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch', 'cassandra',
-    'dynamodb', 'neo4j', 'microservices', 'api', 'grpc', 'websocket', 'git'
+    'dynamodb', 'neo4j', 'microservices', 'api', 'grpc', 'websocket', 'git',
+    'linux', 'bash', 'shell', 'unix', 'windows', 'macos', 'algorithm', 'data structure'
+}
+
+# Role-specific keywords to validate job is in tech domain
+ROLE_KEYWORDS = {
+    'SWE': {'software', 'engineer', 'developer', 'programming', 'coding', 'backend', 'frontend', 'fullstack', 'application'},
+    'ML': {'machine learning', 'deep learning', 'neural', 'model', 'ai', 'artificial intelligence', 'data science'},
+    'DS': {'data scientist', 'data science', 'statistics', 'statistical', 'analysis', 'analytics', 'modeling'},
+    'DA': {'data analyst', 'analyst', 'business intelligence', 'bi', 'reporting', 'visualization'},
+    'FE': {'frontend', 'front-end', 'ui', 'ux', 'design', 'interface', 'web'},
+    'DEVOPS': {'devops', 'sre', 'infrastructure', 'cloud', 'deployment', 'operations', 'reliability'},
+    'PM': {'product manager', 'product management', 'roadmap', 'strategy', 'agile'}
 }
 
 # ============================================================================
@@ -78,26 +79,30 @@ def map_job_category(category):
     """Map job categories to standard roles"""
     cat_lower = str(category).lower()
     
+    # First check if it's a known tech category
     if any(term in cat_lower for term in ['software engineer', 'fullstack', 'backend', 
-                                            'frontend', 'mobile', 'ios', 'android']):
+                                            'mobile', 'ios', 'android']):
         return 'SWE'
+    elif any(term in cat_lower for term in ['frontend', 'front-end', 'ui']):
+        return 'FE'
     elif any(term in cat_lower for term in ['machine learning', 'ml engineer', 'ai']):
         return 'ML'
     elif any(term in cat_lower for term in ['data scientist', 'data science']):
         return 'DS'
     elif any(term in cat_lower for term in ['data engineer', 'data analyst']):
         return 'DA'
-    elif any(term in cat_lower for term in ['frontend', 'front-end', 'ui']):
-        return 'FE'
     elif any(term in cat_lower for term in ['devops', 'sre', 'cloud', 'infrastructure']):
         return 'DEVOPS'
     elif any(term in cat_lower for term in ['product manager', 'pm']):
         return 'PM'
+    elif any(term in cat_lower for term in ['hardware', 'embedded']):
+        return 'SWE'  # Hardware is somewhat tech-related
     else:
-        return 'SWE'
+        # Unknown category - likely not tech
+        return 'OTHER'  # Changed from 'SWE'!
 
 def calculate_tech_overlap(text1, text2):
-    """Calculate tech keyword overlap"""
+    """Calculate tech keyword overlap and return tech sets"""
     words1 = set(re.sub(r'[^a-z0-9\s]', ' ', str(text1).lower()).split())
     words2 = set(re.sub(r'[^a-z0-9\s]', ' ', str(text2).lower()).split())
     
@@ -105,42 +110,73 @@ def calculate_tech_overlap(text1, text2):
     tech2 = words2 & TECH_KEYWORDS
     overlap = len(tech1 & tech2)
     
-    return overlap, len(words1 & words2)
+    return overlap, tech1, tech2
+
+def has_role_indicators(text, role):
+    """Check if text contains role-specific keywords"""
+    if role not in ROLE_KEYWORDS:
+        return True  # Unknown role, assume okay
+    
+    text_lower = str(text).lower()
+    role_words = ROLE_KEYWORDS[role]
+    
+    # Check if ANY role keyword appears
+    for keyword in role_words:
+        if keyword in text_lower:
+            return True
+    return False
 
 def label_pair(resume_role, job_role_mapped, resume_text, job_text):
-    """Assign label to pair"""
-    tech_overlap, word_overlap = calculate_tech_overlap(resume_text, job_text)
+    """Assign label with STRICT validation - prevents SWE vs Plumber mistakes!"""
     
-    # EXACT ROLE MATCH
+    tech_overlap, resume_tech, job_tech = calculate_tech_overlap(resume_text, job_text)
+    
+    # CRITICAL: Check if job is even in tech domain
+    # If job has NO tech keywords at all → Poor Match (e.g., Plumber, Retail, etc.)
+    if len(job_tech) == 0:
+        return 0  # Poor match - job is not in tech!
+    
+    # If job category is completely unknown/non-tech → Poor Match
+    if job_role_mapped == 'OTHER':
+        return 0  # Poor match - unrecognized job type
+    
+    # Check if job description actually mentions the resume's role type
+    job_has_role_match = has_role_indicators(job_text, resume_role)
+    
+    # EXACT ROLE MATCH (e.g., SWE resume + SWE job)
     if resume_role == job_role_mapped:
         if tech_overlap >= STRONG_MATCH_THRESHOLD:
-            return 2
-        elif word_overlap > 10:
-            return 1
+            return 2  # Strong match: same role + high tech overlap
+        elif tech_overlap >= MODERATE_MATCH_THRESHOLD:
+            return 1  # Moderate match: same role + some tech overlap
         else:
-            return 1
+            return 1  # Same role but low tech overlap - still moderate
     
-    # RELATED ROLES
+    # RELATED ROLES (e.g., SWE ↔️ ML, ML ↔️ DS)
     related_pairs = [
-        ('SWE', 'ML'), ('ML', 'SWE'), ('ML', 'DS'), ('DS', 'ML'),
-        ('DS', 'DA'), ('DA', 'DS'), ('SWE', 'DS'), ('DS', 'SWE'),
-        ('FE', 'SWE'), ('SWE', 'FE'), ('SWE', 'DEVOPS'), ('DEVOPS', 'SWE'),
+        ('SWE', 'ML'), ('ML', 'SWE'),
+        ('ML', 'DS'), ('DS', 'ML'),
+        ('DS', 'DA'), ('DA', 'DS'),
+        ('SWE', 'FE'), ('FE', 'SWE'),
+        ('SWE', 'DEVOPS'), ('DEVOPS', 'SWE'),
         ('DA', 'ML'), ('ML', 'DA'),
     ]
     
     if (resume_role, job_role_mapped) in related_pairs:
+        # For related roles, need HIGHER overlap to be strong
         if tech_overlap >= HIGH_OVERLAP_STRONG:
-            return 2
+            return 2  # Strong match despite different roles
         elif tech_overlap >= MODERATE_MATCH_THRESHOLD:
-            return 1
+            return 1  # Moderate match
         else:
-            return 1
+            return 0  # Related but insufficient overlap → Poor
     
-    # UNRELATED
-    if tech_overlap >= HIGH_OVERLAP_STRONG:
-        return 1
-    
-    return 0
+    # COMPLETELY UNRELATED ROLES (e.g., SWE vs PM, FE vs DA)
+    # Need very high overlap to even be moderate
+    if tech_overlap >= 3:
+        return 1  # Some overlap despite unrelated roles
+    else:
+        return 0  # Poor match - unrelated and low overlap
 
 # ============================================================================
 # MAIN PIPELINE
@@ -362,12 +398,29 @@ def main():
         pct = (count / len(pairs)) * 100
         print(f"  {label_names[label]}: {count} ({pct:.1f}%)")
     
-    print("\nNext step:")
-    print("  python src/train_models.py")
+    # Show example labels
+    print("\n" + "="*70)
+    print("EXAMPLE LABELS (Verify these make sense!)")
+    print("="*70)
+    
+    for label in [0, 1, 2]:
+        if label in label_counts and label_counts[label] > 0:
+            example = next(p for p in pairs if p['label'] == label)
+            print(f"\n[{label_names[label].upper()}]")
+            print(f"  Resume: {example['resume_role']}")
+            print(f"  Job: {example['job_role']}")
+            print(f"  Resume snippet: {example['resume_text'][:80]}...")
+            print(f"  Job snippet: {example['job_text'][:80]}...")
+    
+    print("\n" + "="*70)
+    print("Next step:")
+    print("  python train_models.py")
     
     print("\nExpected results:")
-    print("  • Accuracy: 85-92%")
-    print("  • Training time: 1-2 minutes")
+    print("  • Accuracy: 88-93%")
+    print("  • Training time: 30-60 minutes (with BERT)")
+    print("  • SWE vs Plumber → Poor Match ✅")
+    print("="*70)
     
     return 0
 
