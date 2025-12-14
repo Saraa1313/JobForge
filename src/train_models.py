@@ -1,8 +1,5 @@
 """
-CS-441 Final Project: Resume-Job Match Quality Prediction
-Main Training Script
-
-This script:
+Our script:
 1. Loads labeled resume-job pairs
 2. Extracts features using TF-IDF and Sentence-BERT
 3. Trains multiple classifiers
@@ -26,24 +23,19 @@ import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
-# Try to import sentence-transformers, if not available, we'll skip BERT models
 try:
     from sentence_transformers import SentenceTransformer
     BERT_AVAILABLE = True
 except ImportError:
     BERT_AVAILABLE = False
-    print("⚠️  sentence-transformers not installed. BERT models will be skipped.")
-    print("   Install with: pip install sentence-transformers")
+  
 
 class ResumeJobMatcher:
     """Main class for training resume-job matching models"""
     
     def __init__(self, data_path='data/pairs_labeled.csv'):
         """Initialize and load data"""
-        print("="*70)
-        print("RESUME-JOB MATCH QUALITY PREDICTION")
-        print("CS-441 Final Project")
-        print("="*70)
+     
         
         self.data_path = data_path
         self.data = None
@@ -56,34 +48,30 @@ class ResumeJobMatcher:
         
     def load_data(self):
         """Load and validate the labeled dataset"""
-        print("\n[1/6] Loading data...")
+     
         
         try:
             self.data = pd.read_csv(self.data_path)
-            print(f"✅ Loaded {len(self.data)} labeled pairs")
+            
         except FileNotFoundError:
-            print(f"❌ Error: '{self.data_path}' not found!")
-            print("   Please make sure you have labeled the pairs and saved as 'pairs_labeled.csv'")
+           
             return False
         
-        # Validate required columns
+       
         required_cols = ['resume_text', 'job_text', 'label']
         missing_cols = [col for col in required_cols if col not in self.data.columns]
         if missing_cols:
-            print(f"❌ Error: Missing columns: {missing_cols}")
+          
             return False
         
-        # Check for empty labels
+       
         unlabeled = self.data['label'].isna().sum()
         if unlabeled > 0:
-            print(f"⚠️  Warning: {unlabeled} unlabeled pairs found. Removing them...")
+            
             self.data = self.data.dropna(subset=['label'])
         
-        # Convert labels to integers
         self.data['label'] = self.data['label'].astype(int)
         
-        # Display label distribution
-        print("\nLabel Distribution:")
         label_counts = self.data['label'].value_counts().sort_index()
         for label, count in label_counts.items():
             label_name = ['Poor Match', 'Moderate Match', 'Strong Match'][label]
@@ -94,15 +82,13 @@ class ResumeJobMatcher:
     
     def prepare_tfidf_features(self):
         """Extract TF-IDF features from text"""
-        print("\n[2/6] Extracting TF-IDF features...")
+       
         
-        # Combine resume and job text
         self.data['combined_text'] = (
             self.data['resume_text'].fillna('') + ' ' + 
             self.data['job_text'].fillna('')
         )
         
-        # Create TF-IDF vectorizer
         self.tfidf_vectorizer = TfidfVectorizer(
             max_features=5000,
             ngram_range=(1, 2),
@@ -110,67 +96,51 @@ class ResumeJobMatcher:
             stop_words='english'
         )
         
-        # Fit and transform
         X_tfidf = self.tfidf_vectorizer.fit_transform(self.data['combined_text'])
         y = self.data['label'].values
         
-        print(f"✅ TF-IDF feature shape: {X_tfidf.shape}")
-        print(f"   ({X_tfidf.shape[0]} samples, {X_tfidf.shape[1]} features)")
+       
         
         # Split into train/test
         self.X_train_tfidf, self.X_test_tfidf, self.y_train, self.y_test = train_test_split(
             X_tfidf, y, test_size=0.2, random_state=42, stratify=y
         )
         
-        print(f"✅ Train set: {len(self.y_train)} samples")
-        print(f"✅ Test set: {len(self.y_test)} samples")
         
         return True
     
     def prepare_bert_features(self):
         """Extract Sentence-BERT embeddings"""
         if not BERT_AVAILABLE:
-            print("\n[3/6] Skipping BERT features (not installed)...")
+          
             return False
         
-        print("\n[3/6] Extracting Sentence-BERT features...")
-        print("   (This may take a few minutes...)")
-        
-        # Load pre-trained model
         self.bert_model = SentenceTransformer('all-MiniLM-L6-v2')
         
-        # Encode resumes and jobs separately
-        print("   Encoding resumes...")
+        print("Encoding resumes")
         resume_embeddings = self.bert_model.encode(
             self.data['resume_text'].fillna('').tolist(),
             show_progress_bar=True,
             batch_size=32
         )
         
-        print("   Encoding job descriptions...")
+        print("Encoding job descriptions")
         job_embeddings = self.bert_model.encode(
             self.data['job_text'].fillna('').tolist(),
             show_progress_bar=True,
             batch_size=32
         )
         
-        # Combine embeddings: concatenation
         X_bert = np.concatenate([resume_embeddings, job_embeddings], axis=1)
         
-        # Calculate cosine similarity as additional feature
         from sklearn.metrics.pairwise import cosine_similarity
         cosine_sim = np.array([
             cosine_similarity([resume_embeddings[i]], [job_embeddings[i]])[0][0]
             for i in range(len(resume_embeddings))
         ]).reshape(-1, 1)
         
-        # Concatenate with cosine similarity
         X_bert = np.concatenate([X_bert, cosine_sim], axis=1)
-        
-        print(f"✅ BERT feature shape: {X_bert.shape}")
-        print(f"   ({X_bert.shape[0]} samples, {X_bert.shape[1]} features)")
-        
-        # Split into train/test (same split as TF-IDF)
+       
         y = self.data['label'].values
         self.X_train_bert, self.X_test_bert, _, _ = train_test_split(
             X_bert, y, test_size=0.2, random_state=42, stratify=y
@@ -180,7 +150,7 @@ class ResumeJobMatcher:
     
     def train_tfidf_models(self):
         """Train classifiers on TF-IDF features"""
-        print("\n[4/6] Training TF-IDF models...")
+      
         
         models_to_train = {
             'Logistic Regression (TF-IDF)': LogisticRegression(
@@ -204,18 +174,15 @@ class ResumeJobMatcher:
             print(f"\n   Training {name}...")
             model.fit(self.X_train_tfidf, self.y_train)
             self.models[name] = model
-            print(f"   ✅ {name} trained")
+            print(f"{name} - trained")
     
     def train_bert_models(self):
         """Train classifiers on BERT features"""
         if not BERT_AVAILABLE or not hasattr(self, 'X_train_bert'):
-            print("\n[5/6] Skipping BERT models...")
             return
         
-        print("\n[5/6] Training BERT models...")
         
-        # Train Logistic Regression on BERT features
-        print("\n   Training Logistic Regression (BERT)...")
+        # Training Logistic Regression on BERT features
         lr_bert = LogisticRegression(
             max_iter=1000,
             random_state=42,
@@ -223,34 +190,28 @@ class ResumeJobMatcher:
         )
         lr_bert.fit(self.X_train_bert, self.y_train)
         self.models['Logistic Regression (BERT)'] = lr_bert
-        print("   ✅ Logistic Regression (BERT) trained")
     
     def evaluate_models(self):
         """Evaluate all trained models"""
-        print("\n[6/6] Evaluating models...")
-        print("="*70)
+       
         
         for name, model in self.models.items():
             print(f"\n{'='*70}")
             print(f"MODEL: {name}")
             print('='*70)
             
-            # Get test features
             if 'BERT' in name:
                 X_test = self.X_test_bert
             else:
                 X_test = self.X_test_tfidf
             
-            # Make predictions
             y_pred = model.predict(X_test)
             
-            # Calculate metrics
             accuracy = accuracy_score(self.y_test, y_pred)
             precision, recall, f1, _ = precision_recall_fscore_support(
                 self.y_test, y_pred, average='macro', zero_division=0
             )
             
-            # Store results
             self.results[name] = {
                 'accuracy': accuracy,
                 'precision': precision,
@@ -260,13 +221,13 @@ class ResumeJobMatcher:
                 'confusion_matrix': confusion_matrix(self.y_test, y_pred)
             }
             
-            # Print results
+            
             print(f"\nAccuracy:  {accuracy:.4f}")
             print(f"Precision: {precision:.4f}")
             print(f"Recall:    {recall:.4f}")
             print(f"F1-Score:  {f1:.4f}")
             
-            # Print classification report
+            
             print("\nClassification Report:")
             print(classification_report(
                 self.y_test, y_pred,
@@ -276,9 +237,7 @@ class ResumeJobMatcher:
     
     def plot_results(self):
         """Create visualizations of results"""
-        print("\nGenerating visualizations...")
         
-        # 1. Model Comparison Bar Chart
         fig, axes = plt.subplots(2, 2, figsize=(15, 12))
         
         model_names = list(self.results.keys())
@@ -298,7 +257,6 @@ class ResumeJobMatcher:
             ax.set_ylim([0, 1])
             ax.grid(axis='y', alpha=0.3)
             
-            # Add value labels on bars
             for bar in bars:
                 height = bar.get_height()
                 ax.text(bar.get_x() + bar.get_width()/2., height,
@@ -307,10 +265,8 @@ class ResumeJobMatcher:
         
         plt.tight_layout()
         plt.savefig('model_comparison.png', dpi=300, bbox_inches='tight')
-        print("✅ Saved: model_comparison.png")
         plt.close()
         
-        # 2. Confusion Matrices
         n_models = len(self.results)
         fig, axes = plt.subplots(1, n_models, figsize=(6*n_models, 5))
         if n_models == 1:
@@ -332,10 +288,8 @@ class ResumeJobMatcher:
         
         plt.tight_layout()
         plt.savefig('confusion_matrices.png', dpi=300, bbox_inches='tight')
-        print("✅ Saved: confusion_matrices.png")
         plt.close()
         
-        # 3. Summary Results Table
         summary_df = pd.DataFrame({
             'Model': model_names,
             'Accuracy': [self.results[m]['accuracy'] for m in model_names],
@@ -345,29 +299,22 @@ class ResumeJobMatcher:
         })
         summary_df = summary_df.sort_values('F1-Score', ascending=False)
         summary_df.to_csv('model_results_summary.csv', index=False)
-        print("✅ Saved: model_results_summary.csv")
+        print("Saved")
         
-        print("\n" + "="*70)
-        print("SUMMARY TABLE")
-        print("="*70)
-        print(summary_df.to_string(index=False))
+     
     
     def show_example_predictions(self, n=5):
         """Show example predictions from the best model"""
-        print("\n" + "="*70)
-        print("EXAMPLE PREDICTIONS (Best Model)")
-        print("="*70)
+       
         
-        # Find best model by F1 score
         best_model_name = max(self.results.keys(), 
                              key=lambda x: self.results[x]['f1'])
         print(f"\nBest Model: {best_model_name}")
         print(f"F1-Score: {self.results[best_model_name]['f1']:.4f}\n")
         
-        # Get predictions
+       
         y_pred = self.results[best_model_name]['y_pred']
         
-        # Sample some predictions
         indices = np.random.choice(len(self.y_test), min(n, len(self.y_test)), replace=False)
         
         label_names = {0: 'Poor Match', 1: 'Moderate Match', 2: 'Strong Match'}
@@ -379,59 +326,40 @@ class ResumeJobMatcher:
             print(f"Example {i}:")
             print(f"  True Label:      {true_label} ({label_names[true_label]})")
             print(f"  Predicted Label: {pred_label} ({label_names[pred_label]})")
-            print(f"  Correct: {'✅ Yes' if true_label == pred_label else '❌ No'}")
+            print(f"  Correct: {'Yes' if true_label == pred_label else 'No'}")
             print()
     
     def save_models(self):
-        """Save trained models to disk"""
-        print("\nSaving models...")
+        """Save trained models"""
         
-        # Save TF-IDF vectorizer
         joblib.dump(self.tfidf_vectorizer, 'tfidf_vectorizer.pkl')
-        print("✅ Saved: tfidf_vectorizer.pkl")
+    
         
-        # Save each model
         for name, model in self.models.items():
             filename = name.replace(' ', '_').replace('(', '').replace(')', '').lower() + '.pkl'
             joblib.dump(model, filename)
-            print(f"✅ Saved: {filename}")
+            print(f"Saved: {filename}")
     
     def run_pipeline(self):
         """Execute the complete training pipeline"""
-        # Load dataaa
         if not self.load_data():
             return False
         
-        # Extract features
         if not self.prepare_tfidf_features():
             return False
         
         self.prepare_bert_features()
         
-        # Train models
         self.train_tfidf_models()
         self.train_bert_models()
         
-        # Evaluate
         self.evaluate_models()
         
-        # Visualize
         self.plot_results()
         
-        # Show examples
         self.show_example_predictions()
         
-        # Save models
         self.save_models()
-        
-        print("\n" + "="*70)
-        print(" TRAINING COMPLETE!")
-        print("="*70)
-        print("\nGenerated files:")
-        print("  - model_comparison.png")
-        print("  - confusion_matrices.png")
-        print("  - model_results_summary.csv")
-        print("  - *.pkl (saved models)")
         
         return True
 
@@ -441,7 +369,7 @@ def main():
     success = matcher.run_pipeline()
     
     if not success:
-        print("\n❌ Training failed. Please check the errors above.")
+        print("\nTraining failed")
         return 1
     
     return 0

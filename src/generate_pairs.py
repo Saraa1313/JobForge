@@ -18,12 +18,11 @@ def main():
                 "job_id": j["job_id"],
                 "job_role": j["role"],
                 "job_text": j["text"],
-                "label": ""   # <-- YOU will fill 0/1/2 here
+                "label": ""  
             })
 
     df = pd.DataFrame(rows)
     df.to_csv(OUTPUT_PATH, index=False)
-    print(f"Generated {len(df)} pairs into {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     main()

@@ -16,7 +16,7 @@ print("\nStrong Match Examples:")
 strong = [p for p in pairs if p["label"] == "2"][:5]
 
 if not strong:
-    print("⚠️ No strong matches found")
+    print("No strong matches found")
 else:
     for p in strong:
         print(f"{p['resume_role']} -> {p['job_role']}")

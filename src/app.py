@@ -1,21 +1,15 @@
-"""
-Resume-Job Match Predictor - BERT Version
-Interactive Web UI with BERT embeddings
-Run with: streamlit run app_bert.py
-"""
+
 
 import streamlit as st
 import joblib
 import numpy as np
 
-# Page configuration
 st.set_page_config(
     page_title="Resume-Job Match Predictor (BERT)",
     page_icon="🎯",
     layout="wide"
 )
 
-# Custom CSS
 st.markdown("""
     <style>
     .main {
@@ -59,13 +53,11 @@ st.markdown("""
 def load_models():
     """Load both TF-IDF and BERT models"""
     try:
-        # Try to load BERT model
         from sentence_transformers import SentenceTransformer
         
         bert_model_ml = joblib.load('logistic_regression_bert.pkl')
         bert_encoder = SentenceTransformer('all-MiniLM-L6-v2')
         
-        # Also load best TF-IDF model for comparison
         tfidf_model = joblib.load('gradient_boosting_tf-idf.pkl')
         tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
         
@@ -77,18 +69,14 @@ def predict_with_bert(resume_text, job_text, model, encoder):
     """Predict using BERT embeddings"""
     from sklearn.metrics.pairwise import cosine_similarity
     
-    # Encode resume and job
     resume_embedding = encoder.encode([resume_text])
     job_embedding = encoder.encode([job_text])
     
-    # Combine embeddings
     combined = np.concatenate([resume_embedding, job_embedding], axis=1)
     
-    # Add cosine similarity
     cosine_sim = cosine_similarity(resume_embedding, job_embedding)[0][0]
     features = np.concatenate([combined, [[cosine_sim]]], axis=1)
     
-    # Predict
     prediction = model.predict(features)[0]
     probabilities = model.predict_proba(features)[0]
     
@@ -105,28 +93,19 @@ def predict_with_tfidf(resume_text, job_text, model, vectorizer):
     return prediction, probabilities
 
 def main():
-    # Header
     st.title("🎯 Resume-Job Match Predictor (BERT Enhanced)")
     st.markdown("### Powered by Sentence-BERT & Machine Learning")
     st.markdown("---")
     
-    # Load models
     bert_model, bert_encoder, tfidf_model, tfidf_vectorizer, error = load_models()
     
     if error:
-        st.error(f"❌ {error}")
-        st.info("""
-        Please make sure you've trained the model with BERT by running:
-        ⁠ python train_models.py ⁠
+        st.error(f"{error}")
         
-        This will take 30-60 minutes but gives better accuracy!
-        """)
         return
     
-    st.success("✅ BERT model loaded successfully!")
-    st.info("🚀 Using state-of-the-art Sentence-BERT embeddings for higher accuracy!")
+    st.success("BERT model loaded successfully!")
     
-    # Create two columns
     col1, col2 = st.columns(2)
     
     with col1:
@@ -147,17 +126,14 @@ def main():
             help="Enter the complete job description"
         )
     
-    # Model selection
     st.markdown("---")
     model_choice = st.radio(
         "🤖 Select Model:",
-        ["BERT (Best Accuracy - Recommended)", "TF-IDF + Gradient Boosting (Faster)"],
+        ["BERT", "TF-IDF + Gradient Boosting"],
         horizontal=True
     )
     
-    # Predict button
     if st.button("🔍 Analyze Match Quality", key="predict"):
-        # Validate inputs
         if not resume_text.strip() or not job_text.strip():
             st.warning("⚠️ Please enter both resume and job description!")
             return
@@ -170,7 +146,6 @@ def main():
             st.warning("⚠️ Job description seems too short. Please provide more details.")
             return
         
-        # Make prediction
         with st.spinner("🤔 Analyzing match quality with deep learning..."):
             if "BERT" in model_choice:
                 prediction, probabilities = predict_with_bert(
@@ -183,11 +158,9 @@ def main():
                 )
                 model_used = "TF-IDF + Gradient Boosting"
         
-        # Display results
         st.markdown("---")
         st.markdown(f"## 📊 Match Analysis Results ({model_used})")
         
-        # Map prediction to label
         labels = {
             0: {"name": "Poor Match", "emoji": "❌", "class": "poor-match"},
             1: {"name": "Moderate Match", "emoji": "⚠️", "class": "moderate-match"},
@@ -197,7 +170,6 @@ def main():
         result = labels[prediction]
         confidence = probabilities[prediction] * 100
         
-        # Main prediction box
         st.markdown(f"""
             <div class="prediction-box {result['class']}">
                 <h1>{result['emoji']} {result['name']}</h1>
@@ -205,7 +177,6 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
-        # Detailed probabilities
         st.markdown("### 📈 Detailed Breakdown")
         
         col1, col2, col3 = st.columns(3)
@@ -231,7 +202,6 @@ def main():
             )
             st.progress(probabilities[2])
         
-        # Interpretation
         st.markdown("---")
         st.markdown("### 💡 Interpretation")
         
@@ -263,7 +233,6 @@ def main():
             *Recommendation:* Look for candidates with more relevant experience.
             """)
     
-    # Model comparison
     st.markdown("---")
     st.markdown("## 🤖 Model Information")
     
@@ -287,7 +256,6 @@ def main():
         - *Best for:* Speed and efficiency
         """)
     
-    # Examples section
     st.markdown("---")
     st.markdown("## 💡 Try These Examples")
     
